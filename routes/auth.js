@@ -7,28 +7,25 @@ const Exception = require("../src/error-handler/exception");
 const {errorTransporter, combineError} = require("../src/error-handler/handle-error");
 const ErrorCode = require("../src/error-handler/error-code");
 const authVerify = require("../src/security/middleware-auth")
-
-/**
- * GET ALL USER API
- **/
-router.get('/', authVerify, async function (req, res, next) {
-    try {
-        res.status(200).send(await UserService.getInfo(req));
-    } catch (err) {
-        console.log(err)
-        errorTransporter(next, err, ErrorCode.USERS_ERROR_CODE)
-    }
-
-});
+const AuthService = require("../src/service/auth-service")
 
 
 /**
- * CREATE API
+ * LOGIN
  **/
 router.post('/', async function (req, res, next) {
     try {
-        res.status(200).send(await UserService.create(req.body));
+        res.status(200).send(await AuthService.login(req.body));
     } catch (err) {
+        errorTransporter(next, err, ErrorCode.USERS_ERROR_CODE)
+    }
+});
+
+router.post('/register', async function (req, res, next) {
+    try {
+        res.status(200).send(await AuthService.register(req.body));
+    } catch (err) {
+        console.log(err)
         errorTransporter(next, err, ErrorCode.USERS_ERROR_CODE)
     }
 });
